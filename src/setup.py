@@ -9,9 +9,9 @@ setup (
   author='Markus Schmidt',
   author_email='markus262@web.de',
 
-  python_requires='>=3.8',
+  python_requires='>=3.2',
   install_requires=[
-    'Pygments>=2.11.1',
+    'Pygments>=2.9.0',
     'pylspclient>=0.0.2'
   ],
 

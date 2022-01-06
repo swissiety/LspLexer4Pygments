@@ -33,15 +33,13 @@ class SemanticTokenLegend(object):
 
         i = 0
         while i < len(data):
-
             # merge set of modifiers
             modifiers = {}
-            for b in self.iterate_set_bits( data[5 * i + 4] ):
-                modifiers.update( self.tokenModifiers[b] )
+            for b in self.iterate_set_bits(data[i + 4]):
+                modifiers.update(self.tokenModifiers[b])
 
-            yield ( data[5*i], data[5*i+1], data[5*i+2], self.tokenTypes[data[5*i+3]], modifiers)
+            yield (data[i], data[i + 1], data[i + 2], self.tokenTypes[data[i + 3]], modifiers)
             i += 5
-
 
 
 
