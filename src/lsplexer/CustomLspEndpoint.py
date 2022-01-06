@@ -26,9 +26,8 @@ class CustomLspEndpoint(LspEndpoint):
         cond.acquire()
         self.send_message(method_name, kwargs, current_id)
         cond.wait()
-        self.event_dict.pop(current_id)
         cond.release()
-
+        self.event_dict.pop(current_id)
         response = self.response_dict.pop(current_id)
 
         # error handling

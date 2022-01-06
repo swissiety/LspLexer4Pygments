@@ -1,3 +1,4 @@
+import json
 import time
 import pygments.token
 from pygments.lexer import Lexer
@@ -23,10 +24,11 @@ class ReadPipe(threading.Thread):
 # built in tokens https://pygments.org/docs/tokens/
 
 
+
+
 class LspLexer(Lexer):
 
     def __init__(self, **options):
-
         self.filetype = options.get('filetype', '')
         self.lsplocation = options.get('lsplocation', '')
 
@@ -47,15 +49,6 @@ class LspLexer(Lexer):
 
         print("prepare lsp connection for pygmentizing "+ self.filetype);
 
-        # save text to temporary file
-
-        temp_dir = tempfile.TemporaryDirectory()
-        fo = open(temp_dir.name+"/sheets_of_empty_canvas.jimple", "x")
-        fo.write( text )
-        fo.close()
-
-        print('file written to '+ fo.name)
-
         # initialize lsp connection
         # TODO: incorporate lsplocation/command
         p = subprocess.Popen(['java', '-jar', self.lsplocation], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -66,8 +59,8 @@ class LspLexer(Lexer):
         lsp_endpoint = CustomLspEndpoint(json_rpc_endpoint)
 
         lsp_client = CustomLspClient(lsp_endpoint)
-        root_uri = 'file://'+temp_dir.name
-        workspace_folders = [{'name': 'LspCanvas', 'uri': root_uri}]
+        root_uri = None
+        workspace_folders = []  #{'name': 'LspCanvas', 'uri': root_uri}
         capabilities = {
             'textDocument': {
 
@@ -85,31 +78,60 @@ class LspLexer(Lexer):
             },
             'workspace': {}
         }
-        lsp_client.initialize(p.pid, root_uri, root_uri, None, capabilities, "off", workspace_folders)
-        lsp_client.initialized()
-        #print("initialized - let the fun begin")
-        time.sleep(1);          # TODO: quickfix/hack for jimplelsp - remove later!
 
-        uri = "file://" + fo.name
-        languageId = self.filetype
-        version = 1
+        result = lsp_client.initialize(p.pid, root_uri, root_uri, None, capabilities, "off", workspace_folders)
 
-        #TODO: improvable: config flag: lsp server acccesses the file (ie needs a temporary file on the filesystem) or caches a current file snapshot via the didopen/didcheange notifications - saves hdd/sdd io
-        #lsp_client.didOpen(pylspclient.lsp_structs.TextDocumentItem(uri, languageId, version, text))
+        doSyncFile = False
+        if 'textDocumentSync' in result['capabilities']:
+            value = result['capabilities']['textDocumentSync']
+            if isinstance(value, int):
+                if value > 0:
+                    doSyncFile = True
+            elif 'openClose' in value:
+                if bool(value['openClose']):
+                    doSyncFile = True
 
-        data = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) );
+        if doSyncFile:
+            temp_dir = None
+            # synced file contents via didopen
+            lsp_client.initialized()
+
+            uri = "file://" + tempfile.gettempdir() + "/file-does-not-exist-anywhere.jimple"
+            languageId = self.filetype
+            version = 1
+            lsp_client.didOpen(pylspclient.lsp_structs.TextDocumentItem(uri, languageId, version, text))
+
+        else:
+            # no sync -> save text to a temporary file
+            temp_dir = tempfile.TemporaryDirectory()
+            fo = open(temp_dir.name+"/sheets_of_empty_canvas.jimple", "w")
+            fo.write( text )
+            fo.close()
+            print('file written to '+ fo.name)
+            lsp_client.initialized()
+            uri = "file://" + fo.name
+
+
+        time.sleep(1);          # TODO: quickfix/hack for jimplelsp.initialized() and asynchronous file access in - remove line with new release!
+
+
+        data, legend = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) );
 
         lsp_client.shutdown()
         # wait a moment
         lsp_client.exit()
-        # cleanup temp dir
-        temp_dir.cleanup()
+        # cleanup temp dir if used
+        if temp_dir is not None:
+            temp_dir.cleanup()
+
+        if data is None:
+            return ()
 
 
         lastTokenEnd = 0;
         # translate/map response to pygment tokentypes
         # assume the semantic tokens are sorted ascending by startindex
-        for startLine, startChar, length, tokenType, tokenModifier in data:
+        for startLine, startChar, length, tokenType, tokenModifier in legend.transformTokenInts(data):
             index = lastTokenEnd+startChar
             token = pygments.token.Name         # TODO be more precise
             lastTokenEnd = index+length

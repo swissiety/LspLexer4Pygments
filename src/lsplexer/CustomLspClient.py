@@ -60,10 +60,4 @@ class CustomLspClient(LspClient):
 
     def semantic_token(self, textDocument):
         result = self.lsp_endpoint.call_method("textDocument/semanticTokens/full", textDocument=textDocument)
-        if result is None:
-            yield from ()
-
-        json.dumps(result)
-
-        return self.tokenLegend.transformTokenInts(result["data"])
-
+        return result['data'], self.tokenLegend
