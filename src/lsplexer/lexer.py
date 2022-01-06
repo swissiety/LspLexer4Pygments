@@ -1,6 +1,5 @@
-import json
-import re
 import time
+
 import pygments.token
 from pygments.lexer import Lexer
 import tempfile
@@ -44,6 +43,32 @@ class LspLexer(Lexer):
         #This method is the basic interface of a lexer. It is called by the highlight() function. It must process the text and return an iterable of (tokentype, value) pairs from text.
         #        Normally, you don’t need to override this method. The default implementation processes the stripnl, stripall and tabsize options and then yields all tokens from get_tokens_unprocessed(), with the index dropped.
 
+    def map_token(self, semantictoken):
+        map = {
+            'type' : pygments.token.Name,
+            'class': pygments.token.Name.Class,
+            'enum' : pygments.token.Name.Class ,
+            'interface' : pygments.token.Name.Class ,
+            'struct' : pygments.token.Name.Class ,
+            'typeParameter' : pygments.token.Name.Class ,
+            'parameter' : pygments.token.Name ,
+            'variable' : pygments.token.Name ,
+             'property' : pygments.token.Name ,
+             'enumMember' : pygments.token.Name ,
+             'event' : pygments.token.Keyword ,
+             'function' : pygments.token.Name.Function ,
+             'method' : pygments.token.Name.Function ,
+             'macro' : pygments.token.Keyword ,
+             'keyword' : pygments.token.Keyword ,
+             'modifier' : pygments.token.Keyword ,
+             'comment' : pygments.token.Comment ,
+             'string' : pygments.token.String ,
+             'number' : pygments.token.Number ,
+             'regexp' : pygments.token.String.Regex ,
+             'operator': pygments.token.Operator
+        }
+        #print(semantictoken + " ->  "+ str(map.get(semantictoken)))
+        return map.get(semantictoken)
 
     def get_tokens_unprocessed(self, text):
         #This method should process the text and return an iterable of (index, tokentype, value) tuples where index is the starting position of the token within the input text.
@@ -156,12 +181,10 @@ class LspLexer(Lexer):
             printedCharIdx = tokenStart + length
 
 
-            token = pygments.token.Name         # TODO map more precise/diverse
-
             #print("actual token");
-            yield tokenStart, token, text[tokenStart:printedCharIdx]
+            yield tokenStart, self.map_token( tokenType ), text[tokenStart:printedCharIdx]
 
-        # FIXME print tail if its not a token
+        # print tail if its not already a token
         if printedCharIdx < len(text):
             #print("tail token");
             yield firstCharIdx, None, text[firstCharIdx:len(text)]
