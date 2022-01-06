@@ -134,7 +134,7 @@ class LspLexer(Lexer):
         for startLine, startChar, length, tokenType, tokenModifier in legend.transformTokenInts(data):
             index = lastTokenEnd+startChar
             token = pygments.token.Name         # TODO be more precise
-            lastTokenEnd = index+length
-            value = data[index:(lastTokenEnd)]
+            lastTokenEnd = index + length
+            value = data[index:lastTokenEnd]
             # if there is a gap between token and the next token... use Token.Text ?
             yield index, token, value

@@ -1,4 +1,4 @@
-# lspPygments
+# LspLexer4Pygments
 enable lsp protocols' semantic tokens into syntax highlighting by pygments
 
 ## example usage
