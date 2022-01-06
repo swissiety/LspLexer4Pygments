@@ -6,12 +6,12 @@ This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to 
 ### cli
 generic (replace placeholder)
 ```
-python3.8 -m pygments -x -O filetype=jimple,lsplocation=%SERVERBINARY% -l src/lsplexer/lexer.py:LspLexer %INPUTFILE%
+python3.8 -m pygments -x -O filetype=jimple,lspcommand=%SERVERBINARY% -l src/lsplexer/lexer.py:LspLexer %INPUTFILE%
 ```
 
-provided example input
+provided example input (executing given .jar via java)
 ```
-python3.8 -m pygments -x -O filetype=jimple,lsplocation=examples/jimplelsp-0.0.11.jar -l src/lsplexer/lexer.py:LspLexer examples/hello_world.jimple
+python3.8 -m pygments -x -O filetype=jimple,lspcommand="java -jar examples/jimplelsp-0.0.11.jar" -l src/lsplexer/lexer.py:LspLexer examples/hello_world.jimple
 ```
 
 ### example mk_docs config
@@ -37,7 +37,7 @@ markdown_extensions:
     - pymdownx.highlight:
         use_pygments: true
         extend_pygments_lang:
-            {"name": "jimple", "lang": "lsp", "options": {"filetype": "jimple", "lsplocation:": "./jimplelsp.jar"}}
+            {"name": "jimple", "lang": "lsp", "options": {"filetype": "jimple", "lspcommand:": "java -jar ./jimplelsp.jar"}}
     - codehilite
 ```
 (check: maybe codehilite is not necessary)
@@ -49,7 +49,7 @@ markdown_extensions:
 - [x] connect to LspServer (via stdio)
 - [x] adapt pylsp for semantic tokens [LSP Reference](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_semanticTokens)
 - [x] integrate semantic tokens into a custom pygment lexer [blog post](https://www.iamjonas.me/2013/03/custom-syntax-in-pygments.html)
-- [WIP]  allow different types of binarys (currently just java/jars are supported)
+- [x]  allow different types of binary to execute (not just java/jars)
 - [ ] nice2have: socket connection to lsp server
 - [ ] create example config/usage for mk_docs  (filetype of supported lsp language, connection path/url aka lsplocation)
   [see PyMDown config FAQ](https://facelessuser.github.io/PyMdown/user-guide/general-usage/#configuration-file)

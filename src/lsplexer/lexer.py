@@ -1,11 +1,11 @@
-import time
-
-import pygments.token
-from pygments.lexer import Lexer
 import tempfile
 import pylspclient
 import subprocess
 import threading
+import argparse
+
+import pygments.token
+from pygments.lexer import Lexer
 from src.lsplexer.CustomLspEndpoint import CustomLspEndpoint
 from src.lsplexer.CustomLspClient import CustomLspClient
 
@@ -29,7 +29,7 @@ class LspLexer(Lexer):
 
     def __init__(self, **options):
         self.filetype = options.get('filetype', '')
-        self.lsplocation = options.get('lsplocation', '')
+        self.lspcommand = options.get('lspcommand', '')
 
         self.name = 'LspLexer'
         self.aliases = ['lsp']
@@ -81,7 +81,7 @@ class LspLexer(Lexer):
 
         # initialize lsp connection
         # TODO: incorporate lsplocation/command
-        p = subprocess.Popen(['java', '-jar', self.lsplocation], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(self.lspcommand.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         read_pipe = ReadPipe(p.stderr)
         read_pipe.start()
         json_rpc_endpoint = pylspclient.JsonRpcEndpoint(p.stdin, p.stdout)
@@ -126,7 +126,7 @@ class LspLexer(Lexer):
             # synced file contents via didopen
             lsp_client.initialized()
 
-            uri = "file://" + tempfile.gettempdir() + "/file-does-not-exist-anywhere."+self.filetype
+            uri = 'file://' + tempfile.gettempdir() + '/file-does-not-exist-anywhere.'+self.filetype
             languageId = self.filetype
             version = 1
             lsp_client.didOpen(pylspclient.lsp_structs.TextDocumentItem(uri, languageId, version, text))
@@ -134,12 +134,12 @@ class LspLexer(Lexer):
         else:
             # no sync -> save text to a temporary file
             temp_dir = tempfile.TemporaryDirectory()
-            fo = open(temp_dir.name+"/sheet_of_empty_canvas."+self.filetype, "w")
+            fo = open(temp_dir.name+'/sheet_of_empty_canvas.'+self.filetype, 'w')
             fo.write( text )
             fo.close()
             print('file written to '+ fo.name)
             lsp_client.initialized()
-            uri = "file://" + fo.name
+            uri = 'file://' + fo.name
 
         data, legend = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) )
 

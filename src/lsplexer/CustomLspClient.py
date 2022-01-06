@@ -31,12 +31,12 @@ class SemanticTokenLegend(object):
             if data[i] < 0 or data[i+1] < 0:
                 #print("skip negative relation i.e. unordered tokens.")
                 i+=5
-                continue;
+                continue
 
             if data[i] == 0 and data[i+1] == 0:
                 #print("skip overlapping token starts")
                 i+=5
-                continue;
+                continue
 
             # merge set of modifiers
             modifiers = {}
@@ -64,12 +64,12 @@ class CustomLspClient(LspClient):
     def initialize(self, processId, rootUri, rootPath, initializationOptions, capabilities, trace, workspaceFolders):
         result = super().initialize(processId, rootUri, rootPath, initializationOptions, capabilities, trace, workspaceFolders)
 
-        if 'semanticTokensProvider' not in result["capabilities"]:
+        if 'semanticTokensProvider' not in result['capabilities']:
             raise Exception('Semantic tokens are not supported by the given LSP server.')
 
-        self.tokenLegend = to_type(result["capabilities"]["semanticTokensProvider"]["legend"], SemanticTokenLegend)
+        self.tokenLegend = to_type(result['capabilities']['semanticTokensProvider']['legend'], SemanticTokenLegend)
         return result
 
     def semantic_token(self, textDocument):
-        result = self.lsp_endpoint.call_method("textDocument/semanticTokens/full", textDocument=textDocument)
+        result = self.lsp_endpoint.call_method('textDocument/semanticTokens/full', textDocument=textDocument)
         return result['data'], self.tokenLegend
