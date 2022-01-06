@@ -1,4 +1,5 @@
 import json
+import re
 import time
 import pygments.token
 from pygments.lexer import Lexer
@@ -18,7 +19,7 @@ class ReadPipe(threading.Thread):
     def run(self):
         line = self.pipe.readline().decode('utf-8')
         while line:
-            print('lspPygment: '+line)
+            print('LspLexer4Pygment: '+line)
             line = self.pipe.readline().decode('utf-8')
 
 # built in tokens https://pygments.org/docs/tokens/
@@ -42,6 +43,7 @@ class LspLexer(Lexer):
 #    def get_tokens(text)
         #This method is the basic interface of a lexer. It is called by the highlight() function. It must process the text and return an iterable of (tokentype, value) pairs from text.
         #        Normally, you don’t need to override this method. The default implementation processes the stripnl, stripall and tabsize options and then yields all tokens from get_tokens_unprocessed(), with the index dropped.
+
 
     def get_tokens_unprocessed(self, text):
         #This method should process the text and return an iterable of (index, tokentype, value) tuples where index is the starting position of the token within the input text.
@@ -128,13 +130,21 @@ class LspLexer(Lexer):
             return ()
 
 
-        lastTokenEnd = 0;
+        lastLine = 0
+        lastChar = 0
+
         # translate/map response to pygment tokentypes
         # assume the semantic tokens are sorted ascending by startindex
         for startLine, startChar, length, tokenType, tokenModifier in legend.transformTokenInts(data):
-            index = lastTokenEnd+startChar
+
+            #skip/count lines
+            while lastLine < startLine:
+                lastChar = text.find('\n', lastChar)
+                lastLine += 1
+
+            index = lastChar+startChar
             token = pygments.token.Name         # TODO be more precise
-            lastTokenEnd = index + length
-            value = data[index:lastTokenEnd]
+            tokenEnd = index + length
+            value = data[index:tokenEnd ]
             # if there is a gap between token and the next token... use Token.Text ?
             yield index, token, value

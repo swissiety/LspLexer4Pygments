@@ -1,11 +1,4 @@
-import json
-
-import pylspclient
-from pylspclient import lsp_structs, LspClient
-import pylspclient
-import subprocess
-import threading
-
+from pylspclient import LspClient
 from pylspclient.lsp_structs import to_type
 
 
@@ -22,8 +15,6 @@ class SemanticTokenLegend(object):
             n ^= b
 
     def transformTokenInts(self, data):
-        deltaLine = 0
-        deltaStart = 0
 
         #at index 5*i - deltaLine: token line number, relative to the previous token
         #at index 5*i+1 - deltaStart: token start character, relative to the previous token (relative to 0 or the previous token’s start if they are on the same line)
@@ -52,7 +43,9 @@ class CustomLspClient(LspClient):
     def initialize(self, processId, rootUri, rootPath, initializationOptions, capabilities, trace, workspaceFolders):
         result = super().initialize(processId, rootUri, rootPath, initializationOptions, capabilities, trace, workspaceFolders)
 
-        # TODO: if semanticTokensProvider does not exist there is no semantic token support at all! -> error handling!
+        if 'semanticTokensProvider' not in result["capabilities"]:
+            raise Exception('Semantic tokens are not supported by the given LSP server.')
+
         self.tokenLegend = to_type(result["capabilities"]["semanticTokensProvider"]["legend"], SemanticTokenLegend)
         return result
 
