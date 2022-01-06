@@ -126,7 +126,7 @@ class LspLexer(Lexer):
             # synced file contents via didopen
             lsp_client.initialized()
 
-            uri = "file://" + tempfile.gettempdir() + "/file-does-not-exist-anywhere.jimple"
+            uri = "file://" + tempfile.gettempdir() + "/file-does-not-exist-anywhere."+self.filetype
             languageId = self.filetype
             version = 1
             lsp_client.didOpen(pylspclient.lsp_structs.TextDocumentItem(uri, languageId, version, text))
@@ -134,7 +134,7 @@ class LspLexer(Lexer):
         else:
             # no sync -> save text to a temporary file
             temp_dir = tempfile.TemporaryDirectory()
-            fo = open(temp_dir.name+"/sheets_of_empty_canvas.jimple", "w")
+            fo = open(temp_dir.name+"/sheets_of_empty_canvas."+self.filetype, "w")
             fo.write( text )
             fo.close()
             print('file written to '+ fo.name)
