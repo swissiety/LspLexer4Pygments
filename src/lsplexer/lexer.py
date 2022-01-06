@@ -21,7 +21,6 @@ class ReadPipe(threading.Thread):
             print('LspLexer4Pygment: '+line)
             line = self.pipe.readline().decode('utf-8')
 
-# built in tokens https://pygments.org/docs/tokens/
 
 
 
@@ -39,11 +38,15 @@ class LspLexer(Lexer):
 
         Lexer.__init__(self, **options)
 
+
+
 #    def get_tokens(text)
         #This method is the basic interface of a lexer. It is called by the highlight() function. It must process the text and return an iterable of (tokentype, value) pairs from text.
         #        Normally, you don’t need to override this method. The default implementation processes the stripnl, stripall and tabsize options and then yields all tokens from get_tokens_unprocessed(), with the index dropped.
 
+
     def map_token(self, semantictoken):
+        # built in tokens https://pygments.org/docs/tokens/
         map = {
             'type' : pygments.token.Name,
             'class': pygments.token.Name.Class,
@@ -138,10 +141,6 @@ class LspLexer(Lexer):
             lsp_client.initialized()
             uri = "file://" + fo.name
 
-
-        time.sleep(1);          # TODO: quickfix/hack for jimplelsp.initialized() and asynchronous file access in - remove line with new release!
-
-
         data, legend = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) )
 
         lsp_client.shutdown()
@@ -152,7 +151,7 @@ class LspLexer(Lexer):
             temp_dir.cleanup()
 
         if data is None:    # return whole input as a token
-            return 0, None, data
+            return 0, pygments.token.Text, data
 
         lineNo = 0
         firstCharIdx = -1
@@ -169,13 +168,13 @@ class LspLexer(Lexer):
                 firstCharIdx = text.find('\n', firstCharIdx)    # beginning idx of the newline
                 lineNo += 1
                 #print("line token");
-                yield printedCharIdx, None, text[printedCharIdx:firstCharIdx]  # print the line
-                printedCharIdx = firstCharIdx;
+                yield printedCharIdx, pygments.token.Text, text[printedCharIdx:firstCharIdx]  # print the line
+                printedCharIdx = firstCharIdx
 
             # add gaps in the text which have no token as token (from semantic token or lines)
             if printedCharIdx < startChar:  # is already on the same line
                 #print("gap token");
-                yield printedCharIdx, None, text[ printedCharIdx:startChar-1]
+                yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:startChar-1]
 
             tokenStart = firstCharIdx+startChar
             printedCharIdx = tokenStart + length
@@ -187,4 +186,4 @@ class LspLexer(Lexer):
         # print tail if its not already a token
         if printedCharIdx < len(text):
             #print("tail token");
-            yield firstCharIdx, None, text[firstCharIdx:len(text)]
+            yield firstCharIdx, pygments.token.Text, text[firstCharIdx:len(text)]
