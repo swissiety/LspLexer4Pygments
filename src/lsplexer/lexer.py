@@ -129,7 +129,6 @@ class LspLexer(Lexer):
         if data is None:
             return ()
 
-
         lastLine = 0
         lastChar = 0
 
