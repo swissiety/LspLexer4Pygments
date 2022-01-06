@@ -48,12 +48,13 @@ markdown_extensions:
 - [x] call default/custom lexer via cli
 - [x] connect to LspServer (via stdio)
 - [x] adapt pylsp for semantic tokens [LSP Reference](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_semanticTokens)
-- [x] integrate semantic tokens into a custom pygment lexer [see](https://www.iamjonas.me/2013/03/custom-syntax-in-pygments.html)
+- [x] integrate semantic tokens into a custom pygment lexer [blog post](https://www.iamjonas.me/2013/03/custom-syntax-in-pygments.html)
+- [WIP]  allow different types of binarys (currently just java/jars are supported)
+- [ ] nice2have: socket connection to lsp server
 - [ ] create example config/usage for mk_docs  (filetype of supported lsp language, connection path/url aka lsplocation)
   [see PyMDown config FAQ](https://facelessuser.github.io/PyMdown/user-guide/general-usage/#configuration-file)
 - [ ] run/test this tool via mk_docs
 - [ ] create installation script for pip [blog post](https://www.iamjonas.me/2013/03/custom-syntax-in-pygments.html)
-- [ ] nice2have: socket connection to lsp server
 - [ ] nice2have: semantic token modifiers
 
 ## 
