@@ -1,9 +1,15 @@
 # LspLexer4Pygments
 connects a *Language Server Protocol* (LSP) server with [Pygments](https://github.com/pygments/pygments) for syntax highlighting.
-This tool uses *Semantic Tokens* (LSP 3.16) and maps them to Pygment tokens (i.e. the Language Server needs to support the semantic tokens feature)
+This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to Pygments tokens (i.e. the Language Server needs to support the semantic tokens feature).
 
 ## usage
 ### cli
+generic (replace placeholder)
+```
+python3.8 -m pygments -x -O filetype=jimple,lsplocation=%SERVERBINARY% -l src/lsplexer/lexer.py:LspLexer %INPUTFILE%
+```
+
+provided example input
 ```
 python3.8 -m pygments -x -O filetype=jimple,lsplocation=examples/jimplelsp-0.0.11.jar -l src/lsplexer/lexer.py:LspLexer examples/hello_world.jimple
 ```
