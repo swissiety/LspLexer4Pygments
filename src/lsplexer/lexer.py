@@ -163,26 +163,27 @@ class LspLexer(Lexer):
 
             #print("\n["+str(startLine)+":"+str(startCharInLine)+"] "+ str(length)+ "   -> "+ tokenType )
 
-            #handle lines between tokens aka token gaps
+            #handle lines between tokens aka token gaps -> move "cursor" to the line of the semantic token
             while lineNo < startLine:
                 firstCharIdx = text.find('\n', firstCharIdx)+1    # beginning idx of the newline
                 lineNo += 1
-           #     print("line token"+ str(printedCharIdx) + " to " + str(firstCharIdx-1));
-                yield printedCharIdx, pygments.token.Text, text[printedCharIdx:firstCharIdx-1]  # print the line
+                yield printedCharIdx, pygments.token.Text, text[printedCharIdx:firstCharIdx]  # print the line
+         #       print("line token"+ str(printedCharIdx) + " to " + str(firstCharIdx));
                 printedCharIdx = firstCharIdx
 
-            # add gaps in the text which have no token as token (from semantic token or lines)
-            if printedCharIdx < startCharInLine:  # is already on the same line
-            #    print("gap token" + str(printedCharIdx) + " to " + str(startCharInLine));
-                yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:startCharInLine]
-
             tokenStart = firstCharIdx+startCharInLine
+
+            # add gaps in the text which have no token as token (from semantic token or lines)
+            if printedCharIdx < tokenStart:  # is already on the same line
+                yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:tokenStart]
+        #        print("gap token" + str(printedCharIdx) + " to " + str(tokenStart));
+
             printedCharIdx = tokenStart + length
 
-            #print("actual token" + str(tokenStart) + " to " + str(printedCharIdx) );
             yield tokenStart, self.map_token( tokenType ), text[tokenStart:printedCharIdx]
+          #  print("actual token" + str(tokenStart) + " to " + str(printedCharIdx) );
 
         # print tail if its not already a token
         if printedCharIdx < len(text):
-            #print("tail token"  + str(firstCharIdx) + " to " + str(len(text)) );
-            yield firstCharIdx, pygments.token.Text, text[firstCharIdx:len(text)]
+            yield printedCharIdx, pygments.token.Text, text[printedCharIdx:len(text)]
+            #print("tail token"  + str(printedCharIdx) + " to " + str(len(text)) );
