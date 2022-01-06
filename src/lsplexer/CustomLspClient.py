@@ -54,7 +54,7 @@ class CustomLspClient(LspClient):
     def initialize(self, processId, rootUri, rootPath, initializationOptions, capabilities, trace, workspaceFolders):
         result = super().initialize(processId, rootUri, rootPath, initializationOptions, capabilities, trace, workspaceFolders)
 
-        # TODO: if dict element does not exist there is no semantik token support at all! -> error handling!
+        # TODO: if semanticTokensProvider does not exist there is no semantic token support at all! -> error handling!
         self.tokenLegend = to_type(result["capabilities"]["semanticTokensProvider"]["legend"], SemanticTokenLegend)
         return result
 

@@ -38,10 +38,8 @@ https://www.iamjonas.me/2013/03/custom-syntax-in-pygments.html
 - [x] connect to LspServer (via stdio)
 - [ wip ] adapt pylsp for semantic tokens ( see https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_semanticTokens)
 - [ ] integrate semantic tokens into custom pygment
-- [ ] create/run custom lexer fed with semantic tokens
 - [ ] run custom pygment via mk_docs
 - [ ] create config/doc (usage in mk_docs - test in futuresoot)
   (filetype of supported lsp language, connection path/url aka lsplocation)
   https://facelessuser.github.io/PyMdown/user-guide/general-usage/#configuration-file
 - [ ] nice2have: socket connection
-- [ ] nice2have: flag to determine if a temp dir is necessary
