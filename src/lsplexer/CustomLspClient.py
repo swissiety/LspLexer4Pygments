@@ -22,6 +22,9 @@ class SemanticTokenLegend(object):
         #at index 5*i+3 - tokenType: will be looked up in SemanticTokensLegend.tokenTypes. We currently ask that tokenType < 65536.
         #at index 5*i+4 - tokenModifiers: each set bit will be looked up in SemanticTokensLegend.tokenModifiers
 
+        lineIdx = 0
+        charIdx = 0
+
         i = 0
         while i < len(data):
             # merge set of modifiers
@@ -29,7 +32,19 @@ class SemanticTokenLegend(object):
             for b in self.iterate_set_bits(data[i + 4]):
                 modifiers.update(self.tokenModifiers[b])
 
-            yield (data[i], data[i + 1], data[i + 2], self.tokenTypes[data[i + 3]], modifiers)
+            lineIdx += data[i]
+
+            if data[i] == 0:   # token on same line as the last token
+                charIdx += data[i+1]
+            else:
+                charIdx = data[i+1]
+
+            if data[i+1] < 0:
+                print("skip negative relation i.e. unordered tokens.")
+                continue;
+
+            yield (lineIdx, charIdx, data[i + 2], self.tokenTypes[data[i + 3]], modifiers)
+
             i += 5
 
 
