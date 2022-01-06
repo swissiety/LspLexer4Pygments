@@ -134,7 +134,7 @@ class LspLexer(Lexer):
         else:
             # no sync -> save text to a temporary file
             temp_dir = tempfile.TemporaryDirectory()
-            fo = open(temp_dir.name+"/sheets_of_empty_canvas."+self.filetype, "w")
+            fo = open(temp_dir.name+"/sheet_of_empty_canvas."+self.filetype, "w")
             fo.write( text )
             fo.close()
             print('file written to '+ fo.name)

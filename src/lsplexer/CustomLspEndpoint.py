@@ -2,8 +2,34 @@ import threading
 
 from pylspclient import LspEndpoint
 
+#  /dev/null instead of print
+def nowhere(self, **param):
+    pass
 
 class CustomLspEndpoint(LspEndpoint):
+    def __init__(self, json_rpc_endpoint, default_callback=nowhere):
+        super().__init__(json_rpc_endpoint, default_callback)
+
+    def run(self):
+        while not self.shutdown_flag:
+            jsonrpc_message = self.json_rpc_endpoint.recv_response()
+
+            if jsonrpc_message is None:
+                print("server quit")
+                break
+
+            #print("recieved message:", jsonrpc_message)
+            if "result" in jsonrpc_message or "error" in jsonrpc_message:
+                self.handle_result(jsonrpc_message)
+            elif "method" in jsonrpc_message:
+                if jsonrpc_message["method"] in self.callbacks:
+                    self.callbacks[jsonrpc_message["method"]](jsonrpc_message)
+                else:
+                    self.default_callback(jsonrpc_message)
+            else:
+                print("unknown jsonrpc message")
+
+
 
     def stop(self):
         super().stop()
