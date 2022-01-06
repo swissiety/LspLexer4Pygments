@@ -48,7 +48,7 @@ class LspLexer(Lexer):
     def map_token(self, semantictoken):
         # built in tokens https://pygments.org/docs/tokens/
         map = {
-            'type' : pygments.token.Name,
+            'type' : pygments.token.Name.Class,
             'class': pygments.token.Name.Class,
             'enum' : pygments.token.Name.Class ,
             'interface' : pygments.token.Name.Class ,
@@ -178,9 +178,9 @@ class LspLexer(Lexer):
                 yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:tokenStart]
         #        print("gap token" + str(printedCharIdx) + " to " + str(tokenStart));
 
-            printedCharIdx = tokenStart + length
-
-            yield tokenStart, self.map_token( tokenType ), text[tokenStart:printedCharIdx]
+            if tokenStart >= printedCharIdx:        # filter overlaps which would result in more output than there was input -> skip token then
+                printedCharIdx = tokenStart + length
+                yield tokenStart, self.map_token( tokenType ), text[tokenStart:printedCharIdx]
           #  print("actual token" + str(tokenStart) + " to " + str(printedCharIdx) );
 
         # print tail if its not already a token

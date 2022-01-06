@@ -27,6 +27,17 @@ class SemanticTokenLegend(object):
 
         i = 0
         while i < len(data):
+
+            if data[i] < 0 or data[i+1] < 0:
+                #print("skip negative relation i.e. unordered tokens.")
+                i+=5
+                continue;
+
+            if data[i] == 0 and data[i+1] == 0:
+                #print("skip overlapping token starts")
+                i+=5
+                continue;
+
             # merge set of modifiers
             modifiers = {}
             for b in self.iterate_set_bits(data[i + 4]):
@@ -39,12 +50,7 @@ class SemanticTokenLegend(object):
             else:
                 charIdx = data[i+1]
 
-            if data[i+1] < 0:
-                print("skip negative relation i.e. unordered tokens.")
-                continue;
-
-            yield (lineIdx, charIdx, data[i + 2], self.tokenTypes[data[i + 3]], modifiers)
-
+            yield lineIdx, charIdx, data[i + 2], self.tokenTypes[data[i + 3]], modifiers
             i += 5
 
 
