@@ -6,12 +6,19 @@ This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to 
 ### cli
 generic (replace the placeholders)
 ```
-python3.8 -m pygments -x -O filetype=%FILETYPE%,lspcommand=%LSPSERVERBINARY% -l src/lsplexer/lexer.py:LspLexer %INPUTFILE%
+python3.8 -m pygments -x -O filetype=%FILETYPE%,lspcommand=%LSPSERVERBINARY% -l lsplexer/lexer.py:LspLexer %INPUTFILE%
 ```
+
+cli save to export.html
+```
+python3.8 -m pygments -x -f html -O full,filetype=%FILETYPE%,lspcommand=%LSPSERVERBINARY% -l lsplexer/lexer.py:LspLexer -o export.html %INPUTFILE%
+```
+
+
 
 provided example input (executing given .jar via java)
 ```
-python3.8 -m pygments -x -O filetype=jimple,lspcommand="java -jar examples/jimplelsp-0.0.11.jar" -l src/lsplexer/lexer.py:LspLexer examples/hello_world.jimple
+python3.8 -m pygments -x -O filetype=jimple,lspcommand="java -jar examples/jimplelsp-0.0.11.jar" -l lsplexer/lexer.py:LspLexer examples/hello_world.jimple
 ```
 
 ### mk_docs config

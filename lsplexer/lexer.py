@@ -23,8 +23,6 @@ class ReadPipe(threading.Thread):
 
 
 
-
-
 class LspLexer(Lexer):
 
     name = 'LspLexer'
@@ -37,7 +35,7 @@ class LspLexer(Lexer):
         self.lspcommand = options.get('lspcommand', '')
 
         if len(self.lspcommand) == '':
-            raise Exception("No LSP Server specified! Please set the option lspcommand to an executable (command).");
+            raise Exception("No LSP Server specified! Please set the option lspcommand to an executable (command).")
 
         self.filenames = ['*.'+self.filetype ]
 
@@ -60,19 +58,19 @@ class LspLexer(Lexer):
             'typeParameter' : pygments.token.Name.Class ,
             'parameter' : pygments.token.Name ,
             'variable' : pygments.token.Name ,
-             'property' : pygments.token.Name ,
-             'enumMember' : pygments.token.Name ,
-             'event' : pygments.token.Keyword ,
-             'function' : pygments.token.Name.Function ,
-             'method' : pygments.token.Name.Function ,
-             'macro' : pygments.token.Keyword ,
-             'keyword' : pygments.token.Keyword ,
-             'modifier' : pygments.token.Keyword ,
-             'comment' : pygments.token.Comment ,
-             'string' : pygments.token.String ,
-             'number' : pygments.token.Number ,
-             'regexp' : pygments.token.String.Regex ,
-             'operator': pygments.token.Operator
+            'property' : pygments.token.Name ,
+            'enumMember' : pygments.token.Name ,
+            'event' : pygments.token.Keyword ,
+            'function' : pygments.token.Name.Function ,
+            'method' : pygments.token.Name.Function ,
+            'macro' : pygments.token.Keyword ,
+            'keyword' : pygments.token.Keyword ,
+            'modifier' : pygments.token.Keyword ,
+            'comment' : pygments.token.Comment ,
+            'string' : pygments.token.String ,
+            'number' : pygments.token.Number ,
+            'regexp' : pygments.token.String.Regex ,
+            'operator': pygments.token.Operator
         }
         #print(semantictoken + " ->  "+ str(map.get(semantictoken)))
         return map.get(semantictoken)
@@ -81,7 +79,7 @@ class LspLexer(Lexer):
         #This method should process the text and return an iterable of (index, tokentype, value) tuples where index is the starting position of the token within the input text.
         #This method must be overridden by subclasses.
 
-        print("prepare lsp connection for pygmentizing "+ self.filetype);
+        print("prepare lsp connection for pygmentizing "+ self.filetype)
 
         # initialize lsp connection
         # TODO: incorporate lsplocation/command
