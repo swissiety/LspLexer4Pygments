@@ -5,7 +5,7 @@ setup (
   description='Connect a Language Server Protocol (LSP) Server with Pygments via a lexer implementation that is fed by the SemanticTokens Request',
   long_description='',
   url='https://github.com/swissiety/LspLexer4Pygments',
-  keywords='pygments,mkdocs',
+  keywords='pygments,highlight,mkdocs',
   author='Markus Schmidt',
   author_email='markus262@web.de',
 
@@ -16,9 +16,8 @@ setup (
   ],
 
   packages=find_packages(),
-  entry_points=
-  """
+  entry_points="""
   [pygments.lexers]
-  lsplexer = lsplexer.lexer:LspLexer
+  lspLexer = lsplexer.lexer:LspLexer
   """,
 )

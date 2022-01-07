@@ -32,7 +32,7 @@ class CustomLspEndpoint(LspEndpoint):
 
 
     def stop(self):
-        super().stop()
+        self.shutdown_flag = True
         # cleanup conditions that are waiting for a response
         for id in self.event_dict:
             self.response_dict[id] = None

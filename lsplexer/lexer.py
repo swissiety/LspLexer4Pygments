@@ -2,12 +2,12 @@ import tempfile
 import pylspclient
 import subprocess
 import threading
-import argparse
 
 import pygments.token
 from pygments.lexer import Lexer
-from src.lsplexer.CustomLspEndpoint import CustomLspEndpoint
-from src.lsplexer.CustomLspClient import CustomLspClient
+
+from lsplexer.CustomLspClient import CustomLspClient
+from lsplexer.CustomLspEndpoint import CustomLspEndpoint
 
 
 class ReadPipe(threading.Thread):
@@ -27,17 +27,21 @@ class ReadPipe(threading.Thread):
 
 class LspLexer(Lexer):
 
+    name = 'LspLexer'
+    aliases = ['lsp']
+    filenames = []
+    alias_filenames = []
+
     def __init__(self, **options):
-        self.filetype = options.get('filetype', '')
+        self.filetype = options.get('filetype', 'txt')
         self.lspcommand = options.get('lspcommand', '')
 
-        self.name = 'LspLexer'
-        self.aliases = ['lsp']
+        if len(self.lspcommand) == '':
+            raise Exception("No LSP Server specified! Please set the option lspcommand to an executable (command).");
+
         self.filenames = ['*.'+self.filetype ]
-#       self.alias_filenames = [];
 
         Lexer.__init__(self, **options)
-
 
 
 #    def get_tokens(text)
@@ -144,8 +148,8 @@ class LspLexer(Lexer):
         data, legend = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) )
 
         lsp_client.shutdown()
-        # wait a moment
         lsp_client.exit()
+
         # cleanup temp dir if used
         if temp_dir is not None:
             temp_dir.cleanup()
