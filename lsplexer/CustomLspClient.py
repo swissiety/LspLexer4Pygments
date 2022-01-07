@@ -72,4 +72,4 @@ class CustomLspClient(LspClient):
 
     def semantic_token(self, textDocument):
         result = self.lsp_endpoint.call_method('textDocument/semanticTokens/full', textDocument=textDocument)
-        return result['data'], self.tokenLegend
+        return result, self.tokenLegend

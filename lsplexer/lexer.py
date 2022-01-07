@@ -145,7 +145,7 @@ class LspLexer(Lexer):
             lsp_client.initialized()
             uri = 'file://' + fo.name
 
-        data, legend = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) )
+        result, legend = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) )
 
         lsp_client.shutdown()
         lsp_client.exit()
@@ -154,8 +154,9 @@ class LspLexer(Lexer):
         if temp_dir is not None:
             temp_dir.cleanup()
 
-        if data is None:    # return whole input as a token
-            return 0, pygments.token.Text, data
+        if result is None:    # return whole input as a token
+            yield 0, pygments.token.Text, text
+            return
 
         lineNo = 0
         firstCharIdx = 0
@@ -163,7 +164,7 @@ class LspLexer(Lexer):
 
         # translate/map response to pygment tokentypes
         # assume the semantic tokens are sorted ascending by startindex
-        for startLine, startCharInLine, length, tokenType, tokenModifier in legend.transformTokenInts(data):
+        for startLine, startCharInLine, length, tokenType, tokenModifier in legend.transformTokenInts(result['data']):
 
             #print("\n["+str(startLine)+":"+str(startCharInLine)+"] "+ str(length)+ "   -> "+ tokenType )
 
