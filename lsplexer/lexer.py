@@ -89,8 +89,8 @@ class LspLexer(Lexer):
             yield 0, pygments.token.Text, text
             return
 
-        #read_pipe = ReadPipe(p.stderr)
-        #read_pipe.start()
+        read_pipe = ReadPipe(p.stderr)
+        read_pipe.start()
         json_rpc_endpoint = pylspclient.JsonRpcEndpoint(p.stdin, p.stdout)
         # To work with socket: sock_fd = sock.makefile()
         lsp_endpoint = CustomLspEndpoint(json_rpc_endpoint)

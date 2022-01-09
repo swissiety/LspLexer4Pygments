@@ -1,6 +1,11 @@
 # LspLexer4Pygments
 connects a *Language Server Protocol* (LSP) server with [Pygments](https://github.com/pygments/pygments) for syntax highlighting.
-This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to Pygments tokens (i.e. the Language Server needs to support the semantic tokens feature).
+This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to Pygments tokens, which are then used by Pygments to highlight your input accordingly.
+
+## requirements
+- Language server needs to support the semantic tokens capability
+- Language server can communicate via STDIO
+- Python 3.2
 
 ## usage
 ### cli
