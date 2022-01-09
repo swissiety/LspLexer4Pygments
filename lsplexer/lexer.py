@@ -33,10 +33,6 @@ class LspLexer(Lexer):
     def __init__(self, **options):
         self.filetype = options.get('filetype', 'txt')
         self.lspcommand = options.get('lspcommand', '')
-
-        if len(self.lspcommand) == '':
-            raise Exception("No LSP Server specified! Please set the option lspcommand to an executable (command).")
-
         self.filenames = ['*.'+self.filetype ]
 
         Lexer.__init__(self, **options)
@@ -79,13 +75,22 @@ class LspLexer(Lexer):
         #This method should process the text and return an iterable of (index, tokentype, value) tuples where index is the starting position of the token within the input text.
         #This method must be overridden by subclasses.
 
-        print("prepare lsp connection for pygmentizing "+ self.filetype)
+        #print("prepare lsp connection for pygmentizing "+ self.filetype)
 
         # initialize lsp connection
         # TODO: incorporate lsplocation/command
-        p = subprocess.Popen(self.lspcommand.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        read_pipe = ReadPipe(p.stderr)
-        read_pipe.start()
+        try:
+            if self.lspcommand == '':
+                raise Exception("The mandatory lspcommand is not specified - we don't know where to connect to.")
+
+            p = subprocess.Popen(self.lspcommand.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except Exception as e:
+            print("Running the specified lspcommand '"+ self.lspcommand +"' failed.", e);
+            yield 0, pygments.token.Text, text
+            return
+
+        #read_pipe = ReadPipe(p.stderr)
+        #read_pipe.start()
         json_rpc_endpoint = pylspclient.JsonRpcEndpoint(p.stdin, p.stdout)
         # To work with socket: sock_fd = sock.makefile()
         lsp_endpoint = CustomLspEndpoint(json_rpc_endpoint)
