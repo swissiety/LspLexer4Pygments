@@ -16,6 +16,7 @@ class CustomLspEndpoint(LspEndpoint):
 
             if jsonrpc_message is None:
                 print("server quit")
+                self.stop();
                 break
 
             #print("recieved message:", jsonrpc_message)
