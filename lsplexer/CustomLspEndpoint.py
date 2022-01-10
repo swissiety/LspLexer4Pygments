@@ -46,6 +46,9 @@ class CustomLspEndpoint(LspEndpoint):
 
 
     def call_method(self, method_name, **kwargs):
+        if self.shutdown_flag:
+            raise Exception('Server not running!')
+
         current_id = self.next_id
         self.next_id += 1
         cond = threading.Condition()
@@ -65,3 +68,11 @@ class CustomLspEndpoint(LspEndpoint):
             raise Exception( 'Error Response: '+ response["error"]["message"])
 
         return response["result"]
+
+
+
+    def send_notification(self, method_name, **kwargs):
+        if self.shutdown_flag:
+            raise Exception('Server not running!')
+
+        self.send_message(method_name, kwargs)
