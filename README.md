@@ -3,7 +3,7 @@ connects a *Language Server Protocol* (LSP) server with [Pygments](https://githu
 This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to Pygments tokens, which are then used by Pygments to highlight your input accordingly.
 
 ## requirements
-- the language server which to support the semantic tokens capability
+- the language server needs to support the semantic tokens capability
 - the language server can communicate via STDIO
 - Python 3.2
 
