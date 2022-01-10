@@ -49,7 +49,7 @@ markdown_extensions:
       use_pygments: true
       extend_pygments_lang:
         - name: jimple
-          lang: lsp
+          lang: lspserver
           options:
             filetype: jimple
             lspcommand: "java -jar ~/workspace/LspLexer4Pygments/examples/jimplelsp-0.0.11.jar"
