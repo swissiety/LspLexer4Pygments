@@ -15,7 +15,8 @@ class CustomLspEndpoint(LspEndpoint):
             jsonrpc_message = self.json_rpc_endpoint.recv_response()
 
             if jsonrpc_message is None:
-                print("server quit")
+                #print("lspclient: server quit")
+                self.stop();
                 break
 
             #print("recieved message:", jsonrpc_message)
@@ -27,9 +28,7 @@ class CustomLspEndpoint(LspEndpoint):
                 else:
                     self.default_callback(jsonrpc_message)
             else:
-                print("unknown jsonrpc message")
-
-
+                print("lspclient: unknown jsonrpc message")
 
     def stop(self):
         self.shutdown_flag = True
@@ -41,10 +40,11 @@ class CustomLspEndpoint(LspEndpoint):
             cond.notify()
             cond.release()
 
-        self.event_dict = {}
-
 
     def call_method(self, method_name, **kwargs):
+        if self.shutdown_flag:
+            raise Exception('lspclient: cannot call: '+ method_name +' - server is not running! ')
+
         current_id = self.next_id
         self.next_id += 1
         cond = threading.Condition()
@@ -58,9 +58,31 @@ class CustomLspEndpoint(LspEndpoint):
 
         # error handling
         if response is None:
-            raise Exception('Request aborted')
+            raise Exception('lspclient: Request '+ method_name+' aborted.')
 
         if 'error' in response:
-            raise Exception( 'Error Response: '+ response["error"]["message"])
+            raise Exception( 'lspclient: Error response for '+ method_name+': '+ response["error"]["message"])
 
         return response["result"]
+
+
+    def send_notification(self, method_name, **kwargs):
+        if self.shutdown_flag:
+            raise Exception('lspclient: can\'t send '+ method_name+' notification - server is not running!')
+
+        self.send_message(method_name, kwargs)
+
+
+    def send_message(self, method_name, params, id = None):
+        message_dict = {}
+        message_dict["jsonrpc"] = "2.0"
+        if id is not None:
+            message_dict["id"] = id
+        message_dict["method"] = method_name
+        message_dict["params"] = params
+
+        try:
+            self.json_rpc_endpoint.send_request(message_dict)
+        except BrokenPipeError as e:
+            print("Broken Pipe", e);
+            self.stop()

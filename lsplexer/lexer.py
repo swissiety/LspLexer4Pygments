@@ -26,7 +26,7 @@ class ReadPipe(threading.Thread):
 class LspLexer(Lexer):
 
     name = 'LspLexer'
-    aliases = ['lsp']
+    aliases = ['lspserver']
     filenames = []
     alias_filenames = []
 
@@ -78,14 +78,14 @@ class LspLexer(Lexer):
         #print("prepare lsp connection for pygmentizing "+ self.filetype)
 
         # initialize lsp connection
-        # TODO: incorporate lsplocation/command
         try:
             if self.lspcommand == '':
                 raise Exception("The mandatory lspcommand is not specified - we don't know where to connect to.")
 
             p = subprocess.Popen(self.lspcommand.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except Exception as e:
-            print("Running the specified lspcommand '"+ self.lspcommand +"' failed.", e);
+            p.kill()
+            print("Running the specified lspcommand '"+ self.lspcommand +"' failed.", e)
             yield 0, pygments.token.Text, text
             return
 
@@ -116,7 +116,27 @@ class LspLexer(Lexer):
             'workspace': {}
         }
 
-        result = lsp_client.initialize(p.pid, root_uri, root_uri, None, capabilities, "off", workspace_folders)
+        poll = p.poll()
+        if poll is not None:
+            p.kill()
+            print("lspclient: server process is not running.")
+            yield 0, pygments.token.Text, text
+            return
+
+        try:
+            result = lsp_client.initialize(p.pid, root_uri, root_uri, None, capabilities, "off", workspace_folders)
+            # fail early -> check if semantictoken capability is there.
+            if 'semanticTokensProvider' not in result['capabilities']:
+                p.kill()
+                yield 0, pygments.token.Text, text
+                return
+
+        except Exception as e:
+            p.kill()
+            print("lspclient: initialize failed.", e)
+            yield 0, pygments.token.Text, text
+            return
+
 
         doSyncFile = False
         if 'textDocumentSync' in result['capabilities']:
@@ -158,6 +178,7 @@ class LspLexer(Lexer):
             temp_dir.cleanup()
 
         if result is None:    # return whole input as a token
+            p.kill()
             yield 0, pygments.token.Text, text
             return
 
@@ -195,3 +216,5 @@ class LspLexer(Lexer):
         if printedCharIdx < len(text):
             yield printedCharIdx, pygments.token.Text, text[printedCharIdx:len(text)]
             #print("tail token"  + str(printedCharIdx) + " to " + str(len(text)) );
+
+        p.kill()
