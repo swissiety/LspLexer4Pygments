@@ -64,12 +64,19 @@ class CustomLspClient(LspClient):
     def initialize(self, processId, rootUri, rootPath, initializationOptions, capabilities, trace, workspaceFolders):
         result = super().initialize(processId, rootUri, rootPath, initializationOptions, capabilities, trace, workspaceFolders)
 
-        if 'semanticTokensProvider' not in result['capabilities']:
-            print('Semantic tokens are not supported by the given LSP server.')
-            return result
+        if 'semanticTokensProvider' in result['capabilities']:
+            self.tokenLegend = to_type(result['capabilities']['semanticTokensProvider']['legend'], SemanticTokenLegend)
 
-        self.tokenLegend = to_type(result['capabilities']['semanticTokensProvider']['legend'], SemanticTokenLegend)
         return result
+
+
+    def shutdown(self):
+        return self.lsp_endpoint.call_method("shutdown")
+
+    def exit(self):
+        self.lsp_endpoint.send_notification("exit")
+        self.lsp_endpoint.stop()
+
 
     def semantic_token(self, textDocument):
         if self.tokenLegend == None:
