@@ -116,7 +116,24 @@ class LspLexer(Lexer):
             'workspace': {}
         }
 
-        result = lsp_client.initialize(p.pid, root_uri, root_uri, None, capabilities, "off", workspace_folders)
+        poll = p.poll()
+        if poll is not None:
+            print("lspclient: server process is not running.")
+            yield 0, pygments.token.Text, text
+            return
+
+        try:
+            result = lsp_client.initialize(p.pid, root_uri, root_uri, None, capabilities, "off", workspace_folders)
+            # fail early -> check if semantictoken capability is there.
+            if 'semanticTokensProvider' not in result['capabilities']:
+                yield 0, pygments.token.Text, text
+                return
+
+        except Exception as e:
+            print("lspclient: initialize failed.", e)
+            yield 0, pygments.token.Text, text
+            return
+
 
         doSyncFile = False
         if 'textDocumentSync' in result['capabilities']:
