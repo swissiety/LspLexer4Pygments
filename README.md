@@ -8,6 +8,15 @@ This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to 
 - Python 3.2
 
 ## usage
+adapt LspLexer4Pygments options:
+```
+# mandatory; path expansion is disabled!
+lspcommand="executable_(command)_to-an_lsp_server_that_communicates_via_stdio"
+
+# optional
+filetype="file_extension" 
+```
+
 ### cli
 generic (replace the placeholders)
 ```
@@ -52,7 +61,7 @@ markdown_extensions:
           lang: lspserver
           options:
             filetype: jimple
-            lspcommand: "java -jar ~/workspace/LspLexer4Pygments/examples/jimplelsp-0.0.11.jar"
+            lspcommand: "java -jar /workspace/LspLexer4Pygments/examples/jimplelsp-0.0.11.jar"
   - pymdownx.superfences
 ```
 

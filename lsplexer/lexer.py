@@ -78,7 +78,6 @@ class LspLexer(Lexer):
         #print("prepare lsp connection for pygmentizing "+ self.filetype)
 
         # initialize lsp connection
-        # TODO: incorporate lsplocation/command
         try:
             if self.lspcommand == '':
                 raise Exception("The mandatory lspcommand is not specified - we don't know where to connect to.")
@@ -86,7 +85,7 @@ class LspLexer(Lexer):
             p = subprocess.Popen(self.lspcommand.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except Exception as e:
             p.kill()
-            print("Running the specified lspcommand '"+ self.lspcommand +"' failed.", e);
+            print("Running the specified lspcommand '"+ self.lspcommand +"' failed.", e)
             yield 0, pygments.token.Text, text
             return
 
