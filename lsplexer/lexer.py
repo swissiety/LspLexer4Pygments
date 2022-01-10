@@ -26,7 +26,7 @@ class ReadPipe(threading.Thread):
 class LspLexer(Lexer):
 
     name = 'LspLexer'
-    aliases = ['lspserver']
+    aliases = ['lspserver', 'lsplexer']
     filenames = []
     alias_filenames = []
 

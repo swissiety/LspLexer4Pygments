@@ -3,15 +3,15 @@ connects a *Language Server Protocol* (LSP) server with [Pygments](https://githu
 This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to Pygments tokens, which are then used by Pygments to highlight your input accordingly.
 
 ## requirements
-- Language server needs to support the semantic tokens capability
-- Language server can communicate via STDIO
+- the language server which to support the semantic tokens capability
+- the language server can communicate via STDIO
 - Python 3.2
 
 ## usage
 adapt LspLexer4Pygments options:
 ```
 # mandatory; path expansion is disabled!
-lspcommand="executable_(command)_to-an_lsp_server_that_communicates_via_stdio"
+lspcommand="executable_(command)_to_a_lsp_server"
 
 # optional
 filetype="file_extension" 
@@ -41,7 +41,7 @@ Install LspLexer4Pygments:
 pip install git+https://github.com/swissiety/LspLexer4Pygments.git
 ```
 
-get your LSP server binary. e.g. download the latest *jimplelsp.jar* release on github to support highlighting fpr [Soot](https://github.com/soot-oss/soot) s Jimple:
+get your LSP server binary. e.g. download the latest *jimplelsp.jar* release on github to support highlighting for [Soot](https://github.com/soot-oss/soot) s Jimple:
 ```
 curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest\
 | grep "browser_download_url.*jar"\
@@ -50,7 +50,7 @@ curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest\
 | wget -q -O jimplelsp.jar -
 ```
 
-set config for Pygments in mkdocs.yml (adapt "name: jimple" (1), "filetype: jimple" and the lspcommand accordingly; it has to refer to "lang: lsp"):
+set config for Pygments in your mkdocs.yml (adapt "name: jimple" (1), "filetype: jimple" and the lspcommand accordingly; "lang:" needs to be lspserver):
 ```
 markdown_extensions:
   - pymdownx.highlight:
@@ -65,13 +65,12 @@ markdown_extensions:
   - pymdownx.superfences
 ```
 
-specify the given language name from (1) directly after the ticks:
+specify your specified language name from (1) directly after the ticks of the surrounding code block:
 ```
    ```jimple
       /* this is not the .jimple file content you're looking for */
     ```
 ```
-
 
 
 ## development
@@ -87,5 +86,3 @@ specify the given language name from (1) directly after the ticks:
 - [x] run/test this tool via mk_docs
 - [x] create installation script for pip
 - [ ] nice2have: semantic token modifiers
-
-## 
