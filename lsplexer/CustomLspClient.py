@@ -77,7 +77,6 @@ class CustomLspClient(LspClient):
         self.lsp_endpoint.send_notification("exit")
         self.lsp_endpoint.stop()
 
-
     def semantic_token(self, textDocument):
         if self.tokenLegend == None:
             return None, None

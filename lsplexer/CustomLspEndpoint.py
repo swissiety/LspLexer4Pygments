@@ -15,7 +15,7 @@ class CustomLspEndpoint(LspEndpoint):
             jsonrpc_message = self.json_rpc_endpoint.recv_response()
 
             if jsonrpc_message is None:
-                print("lspclient: server quit")
+                #print("lspclient: server quit")
                 self.stop();
                 break
 
@@ -30,7 +30,6 @@ class CustomLspEndpoint(LspEndpoint):
             else:
                 print("lspclient: unknown jsonrpc message")
 
-
     def stop(self):
         self.shutdown_flag = True
         # cleanup conditions that are waiting for a response
@@ -44,7 +43,7 @@ class CustomLspEndpoint(LspEndpoint):
 
     def call_method(self, method_name, **kwargs):
         if self.shutdown_flag:
-            raise Exception('lspclient: cannot call: '+ method_name +' - Server not running! ')
+            raise Exception('lspclient: cannot call: '+ method_name +' - server is not running! ')
 
         current_id = self.next_id
         self.next_id += 1
@@ -59,17 +58,17 @@ class CustomLspEndpoint(LspEndpoint):
 
         # error handling
         if response is None:
-            raise Exception('lspclient: Request aborted')
+            raise Exception('lspclient: Request '+ method_name+' aborted.')
 
         if 'error' in response:
-            raise Exception( 'lspclient: Error Response: '+ response["error"]["message"])
+            raise Exception( 'lspclient: Error response for '+ method_name+': '+ response["error"]["message"])
 
         return response["result"]
 
 
     def send_notification(self, method_name, **kwargs):
         if self.shutdown_flag:
-            raise Exception('lspclient: Server not running!')
+            raise Exception('lspclient: can\'t send '+ method_name+' notification - server is not running!')
 
         self.send_message(method_name, kwargs)
 

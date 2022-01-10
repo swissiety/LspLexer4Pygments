@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup (
   name='LspLexer4Pygments',
-  version='0.1.0',
+  version='0.2.0',
   description='Connect a Language Server Protocol (LSP) Server with Pygments via a lexer implementation that is fed by the SemanticTokens Request',
   long_description='',
   url='https://github.com/swissiety/LspLexer4Pygments',
