@@ -1,7 +1,7 @@
 # LspLexer4Pygments
 connects a *Language Server Protocol* (LSP) server with [Pygments](https://github.com/pygments/pygments) for syntax highlighting.
 This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to Pygments tokens, which are then used by Pygments to highlight your input accordingly.
-Pygments can colorize input for cli, HTML, LaTeX, ... so you can use Pygments and LspLexer4Pygments for syntax highlighting of a custom LspServer implementation to enhance your web based documentation e.g. via mk_docs, your thesis, scientific paper, etc.
+Pygments can colorize input for cli, HTML, LaTeX, ... so you can use Pygments and LspLexer4Pygments for syntax highlighting of a custom LspServer implementation to enhance your web based documentation e.g. via [MkDocs](https://github.com/mkdocs/mkdocs), your thesis, scientific paper, etc.
 
 ## requirements
 - the used language server can communicate via STDIO and needs to support the semantic tokens capability
@@ -46,7 +46,7 @@ Example LaTeX document (subdirectory for the translated results are in **pyg_exp
 ```
 
 
-### Web based documentation (via mk_docs)
+### Web based documentation (via MkDocs)
 get your LSP server binary. e.g. download the latest *jimplelsp.jar* release on github to support highlighting for [Soot](https://github.com/soot-oss/soot) s Jimple
 ```
 curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
