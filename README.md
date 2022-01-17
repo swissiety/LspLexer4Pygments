@@ -35,7 +35,7 @@ Example LaTeX document (subdirectory for the translated results are in **pyg_exp
 \documentclass{article}
 \usepackage[utf8x]{inputenc}
 \usepackage{texments}
-\usestyle{default} 				% Mandatory! other useful styles are: bw, borland, vs
+\usestyle{default} 		% Mandatory! other useful styles are: bw, borland, vs
 
 \begin{document}
 
