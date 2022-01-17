@@ -23,7 +23,7 @@ lspcommand="executable_(command)_to_a_lsp_server"
 filetype="file_extension" (default: txt) 
 ```
 
-## LaTeX document (config: for **JimpleLSP**)
+### LaTeX document (config: for **JimpleLSP**)
 Command to translate Jimple code from file **code/jimple_listing1.jimple** to a file **pyg_export/jimple_listing1.pyg**
 ```
  python3 -m pygments -x -P filetype=jimple -P lspcommand="java -jar /path/to/content_root/of/LspLexer4Pygments/examples/jimplelsp-0.0.11.jar" -l lspserver -o pyg_export/jimple_listing1.pyg code/jimple_listing1.jimple
