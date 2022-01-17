@@ -49,11 +49,7 @@ Example LaTeX document (subdirectory for the translated results are in **pyg_exp
 ### Web based documentation (via mk_docs)
 get your LSP server binary. e.g. download the latest *jimplelsp.jar* release on github to support highlighting for [Soot](https://github.com/soot-oss/soot) s Jimple
 ```
-curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest\
-| grep "browser_download_url.*jar"\
-| cut -d : -f 2,3\
-| tr -d \"\
-| wget -q -O jimplelsp.jar -
+curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
 ```
 
 set config for Pygments in your mkdocs.yml (adapt "name: jimple" (1), "filetype: jimple" and the lspcommand accordingly; "lang:" must be lspserver or lsplexer)
