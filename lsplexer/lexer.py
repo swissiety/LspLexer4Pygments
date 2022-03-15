@@ -168,7 +168,7 @@ class LspLexer(Lexer):
             lsp_client.initialized()
             uri = 'file://' + fo.name
 
-        result, legend = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) )
+        tokenResult, legend = lsp_client.semantic_token( pylspclient.lsp_structs.TextDocumentIdentifier(uri) )
 
         lsp_client.shutdown()
         lsp_client.exit()
@@ -187,8 +187,9 @@ class LspLexer(Lexer):
         printedCharIdx = 0
 
         # translate/map response to pygment tokentypes
-        # FIXME: we currently assume the semantic tokens are sorted ascending by startindex
-        for startLine, startCharInLine, length, tokenType, tokenModifier in legend.transformTokenInts(result['data']):
+        # we cannot assume the semantic tokens are sorted ascending by startindex
+        result = []
+        for startLine, startCharInLine, length, tokenType, tokenModifier in legend.transformTokenInts(tokenResult['data']):
 
             #print("\n["+str(startLine)+":"+str(startCharInLine)+"] "+ str(length)+ "   -> "+ tokenType )
 
@@ -196,27 +197,38 @@ class LspLexer(Lexer):
             while lineNo < startLine:
                 firstCharIdx = text.find('\n', printedCharIdx)+1    # beginning idx of the newline
                 lineNo += 1
-                yield printedCharIdx, pygments.token.Text, text[printedCharIdx:firstCharIdx]  # fill gap of a whole line
+                #yield printedCharIdx, pygments.token.Text, text[printedCharIdx:firstCharIdx]  # fill gap of a whole line
          #       print("line token"+ str(printedCharIdx) + " to " + str(firstCharIdx));
                 printedCharIdx = firstCharIdx
 
             tokenStartIdx = firstCharIdx+startCharInLine
 
             # fill gap of a text range that has no token assigned
-            if printedCharIdx < tokenStartIdx:  # is already on the same line
-                yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:tokenStartIdx]
+            #if printedCharIdx < tokenStartIdx:  # is already on the same line
+            #    yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:tokenStartIdx]
         #        print("gap token" + str(printedCharIdx) + " to " + str(tokenStartIdx));
 
             if tokenStartIdx >= printedCharIdx:        # filter overlaps which would result in more output than there was input -> skip token then
                 # print real token
                 printedCharIdx = tokenStartIdx + length
-                yield tokenStartIdx, self.map_token( tokenType ), text[tokenStartIdx:printedCharIdx]
+                result.append([tokenStartIdx, self.map_token( tokenType ), printedCharIdx])
                 # update lineNo if token goes across multiple lines!
-                lineNo += text[tokenStartIdx:printedCharIdx].count('\n');
+                lineNo += text.count('\n', tokenStartIdx, printedCharIdx);
 
           #  print("actual token" + str(tokenStartIdx) + " to " + str(printedCharIdx) );
 
-        # print tail if its not already a token
+        # sort it
+        result.sort(key=lambda x: x[0] )
+        printedIdx = 0
+        for tokenStartIdx, tokenType, endIdx in result:
+            # fill gaps
+            if printedIdx < tokenStartIdx:
+                yield printedIdx, pygments.token.Text, text[ printedIdx:tokenStartIdx]
+
+            yield tokenStartIdx, tokenType, text[tokenStartIdx:endIdx]
+            printedIdx = endIdx
+
+        # print tail token if its not already a token
         if printedCharIdx < len(text):
             yield printedCharIdx, pygments.token.Text, text[printedCharIdx:len(text)]
             #print("tail token"  + str(printedCharIdx) + " to " + str(len(text)) );
