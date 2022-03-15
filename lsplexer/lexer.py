@@ -109,7 +109,7 @@ class LspLexer(Lexer):
                                    'modifier','comment','string','number','regexp','operator'],
                     'tokenModifiers': [],
                     'formats': ['relative'],
-                    'overlappingTokenSupport': False,
+                    'overlappingTokenSupport': True,
                     'multilineTokenSupport': True
                 }
             },
