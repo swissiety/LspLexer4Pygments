@@ -76,7 +76,7 @@ specify your specified language name from (1) directly after the ticks of the su
 ```
 
 
-### command line interface / cli
+### Command line interface / cli
 generic (replace the placeholders) use installed LspLexer4Pygments
 ```
 python3 -m pygments -x -P filetype=%FILETYPE% -P lspcommand="%LSPSERVERBINARY%" -l lspserver %INPUTFILE%

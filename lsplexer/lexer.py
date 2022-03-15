@@ -52,14 +52,14 @@ class LspLexer(Lexer):
             'interface' : pygments.token.Name.Class ,
             'struct' : pygments.token.Name.Class ,
             'typeParameter' : pygments.token.Name.Class ,
-            'parameter' : pygments.token.Name ,
-            'variable' : pygments.token.Name ,
+            'parameter' : pygments.token.Name.Variable ,
+            'variable' : pygments.token.Name.Variable ,
             'property' : pygments.token.Name ,
             'enumMember' : pygments.token.Name ,
             'event' : pygments.token.Keyword ,
             'function' : pygments.token.Name.Function ,
             'method' : pygments.token.Name.Function ,
-            'macro' : pygments.token.Keyword ,
+            'macro' : pygments.token.Name.Function.Magic ,
             'keyword' : pygments.token.Keyword ,
             'modifier' : pygments.token.Keyword ,
             'comment' : pygments.token.Comment ,
@@ -187,30 +187,34 @@ class LspLexer(Lexer):
         printedCharIdx = 0
 
         # translate/map response to pygment tokentypes
-        # assume the semantic tokens are sorted ascending by startindex
+        # FIXME: we currently assume the semantic tokens are sorted ascending by startindex
         for startLine, startCharInLine, length, tokenType, tokenModifier in legend.transformTokenInts(result['data']):
 
             #print("\n["+str(startLine)+":"+str(startCharInLine)+"] "+ str(length)+ "   -> "+ tokenType )
 
             #handle lines between tokens aka token gaps -> move "cursor" to the line of the semantic token
             while lineNo < startLine:
-                firstCharIdx = text.find('\n', firstCharIdx)+1    # beginning idx of the newline
+                firstCharIdx = text.find('\n', printedCharIdx)+1    # beginning idx of the newline
                 lineNo += 1
-                yield printedCharIdx, pygments.token.Text, text[printedCharIdx:firstCharIdx]  # print the line
+                yield printedCharIdx, pygments.token.Text, text[printedCharIdx:firstCharIdx]  # fill gap of a whole line
          #       print("line token"+ str(printedCharIdx) + " to " + str(firstCharIdx));
                 printedCharIdx = firstCharIdx
 
-            tokenStart = firstCharIdx+startCharInLine
+            tokenStartIdx = firstCharIdx+startCharInLine
 
-            # add gaps in the text which have no token as token (from semantic token or lines)
-            if printedCharIdx < tokenStart:  # is already on the same line
-                yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:tokenStart]
-        #        print("gap token" + str(printedCharIdx) + " to " + str(tokenStart));
+            # fill gap of a text range that has no token assigned
+            if printedCharIdx < tokenStartIdx:  # is already on the same line
+                yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:tokenStartIdx]
+        #        print("gap token" + str(printedCharIdx) + " to " + str(tokenStartIdx));
 
-            if tokenStart >= printedCharIdx:        # filter overlaps which would result in more output than there was input -> skip token then
-                printedCharIdx = tokenStart + length
-                yield tokenStart, self.map_token( tokenType ), text[tokenStart:printedCharIdx]
-          #  print("actual token" + str(tokenStart) + " to " + str(printedCharIdx) );
+            if tokenStartIdx >= printedCharIdx:        # filter overlaps which would result in more output than there was input -> skip token then
+                # print real token
+                printedCharIdx = tokenStartIdx + length
+                yield tokenStartIdx, self.map_token( tokenType ), text[tokenStartIdx:printedCharIdx]
+                # update lineNo if token goes across multiple lines!
+                lineNo += text[tokenStartIdx:printedCharIdx].count('\n');
+
+          #  print("actual token" + str(tokenStartIdx) + " to " + str(printedCharIdx) );
 
         # print tail if its not already a token
         if printedCharIdx < len(text):
