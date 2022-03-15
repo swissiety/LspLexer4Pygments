@@ -119,12 +119,12 @@ class LspLexer(Lexer):
         try:
             poll = p.poll()
             if poll is not None:
-                raise "lspclient: the server process is not running."
+                raise Exception("lspclient: the server process is not running.")
 
             result = lsp_client.initialize(p.pid, root_uri, root_uri, None, capabilities, "off", workspace_folders)
             # fail early -> check if semantictoken capability is there.
             if 'semanticTokensProvider' not in result['capabilities']:
-                raise "the specified LSP server has no SemanticToken capability!"
+                raise Exception("lspclient: the specified LSP server has no SemanticToken capability!")
 
             doSyncFile = False
             if 'textDocumentSync' in result['capabilities']:
@@ -163,9 +163,9 @@ class LspLexer(Lexer):
 
         except Exception as e:
             print(e)
+            yield 0, pygments.token.Text, text
             return
         finally:
-            yield 0, pygments.token.Text, text
             p.kill()
 
 
