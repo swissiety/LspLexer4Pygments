@@ -197,16 +197,9 @@ class LspLexer(Lexer):
             while lineNo < startLine:
                 firstCharIdx = text.find('\n', printedCharIdx)+1    # beginning idx of the newline
                 lineNo += 1
-                #yield printedCharIdx, pygments.token.Text, text[printedCharIdx:firstCharIdx]  # fill gap of a whole line
-         #       print("line token"+ str(printedCharIdx) + " to " + str(firstCharIdx));
                 printedCharIdx = firstCharIdx
 
             tokenStartIdx = firstCharIdx+startCharInLine
-
-            # fill gap of a text range that has no token assigned
-            #if printedCharIdx < tokenStartIdx:  # is already on the same line
-            #    yield printedCharIdx, pygments.token.Text, text[ printedCharIdx:tokenStartIdx]
-        #        print("gap token" + str(printedCharIdx) + " to " + str(tokenStartIdx));
 
             if tokenStartIdx >= printedCharIdx:        # filter overlaps which would result in more output than there was input -> skip token then
                 # print real token
@@ -221,10 +214,21 @@ class LspLexer(Lexer):
         result.sort(key=lambda x: x[0] )
         printedIdx = 0
         for tokenStartIdx, tokenType, endIdx in result:
-            # fill gaps
+            # skip possible overlapping tokens
+            if tokenStartIdx <= printedIdx:
+                if endIdx > printedIdx:
+                    #add rest of token
+                    yield printedIdx, tokenType, text[ printedIdx:endIdx]
+                    printedIdx = endIdx
+
+                continue
+
+
+            # fill gap
             if printedIdx < tokenStartIdx:
                 yield printedIdx, pygments.token.Text, text[ printedIdx:tokenStartIdx]
 
+            # add token
             yield tokenStartIdx, tokenType, text[tokenStartIdx:endIdx]
             printedIdx = endIdx
 
