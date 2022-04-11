@@ -1,9 +1,9 @@
 # LspLexer4Pygments
-connects a *Language Server Protocol* (LSP) server with [Pygments](https://github.com/pygments/pygments) for syntax highlighting.
+connects [Pygments](https://github.com/pygments/pygments) with a [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) (LSP) server for syntax highlighting purposes.
 
-This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps them to Pygments tokens, which are then used by Pygments to highlight your input accordingly.
+This tool uses the *semantic tokens* feature of LSP (LSP 3.16) and maps the retrieved information to Pygments tokens, which are then used by Pygments to highlight your input accordingly.
 
-Pygments can colorize input for cli, HTML, LaTeX, ... so you can use Pygments and LspLexer4Pygments for syntax highlighting of a custom LspServer implementation to enhance your web based documentation e.g. via [MkDocs](https://github.com/mkdocs/mkdocs), your thesis, scientific paper, etc.
+Pygments can colorize input for cli, HTML, LaTeX, ... so you can use Pygments and LspLexer4Pygments for syntax highlighting of a custom LspServer implementation to enhance your web based documentation e.g. via [MkDocs](https://github.com/mkdocs/mkdocs), your thesis, a scientific paper, etc.
 
 ## Requirements
 - the used language server can communicate via STDIO and needs to support the semantic tokens capability
@@ -18,7 +18,7 @@ pip install git+https://github.com/swissiety/LspLexer4Pygments.git
 ## Usage
 LspLexer4Pygments options
 ```
-#mandatory; hint: path expansion is disabled!
+# mandatory; (hint: path expansion is disabled! So no environment vars etc.)
 lspcommand="executable_(command)_to_a_lsp_server"
 
 # optional
