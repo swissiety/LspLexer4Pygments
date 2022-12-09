@@ -11,32 +11,31 @@ Pygments can colorize input for cli, HTML, LaTeX, ... so you can use Pygments an
 
 ## Installation
 (assumption: you already have python and pip installed)
-``` 
+```Shell
 pip install git+https://github.com/swissiety/LspLexer4Pygments.git
 ```
 
-## Usage
-LspLexer4Pygments options
-```
-# mandatory; (hint: path expansion is disabled! So no environment vars etc.)
-lspcommand="executable_(command)_to_a_lsp_server"
+## Configuration options
 
-# optional
-filetype="file_extension" (default: txt) 
-```
+mandatory: *(hint: path expansion is disabled! So no environment vars etc.)*
+> lspcommand="path/to/a/lsp_server/executable_or_command"
+
+optional:
+> filetype="file_extension" (default: txt) 
+
 
 
 ## Usage Examples
 ### LaTeX document (config: for **JimpleLSP**)
 Command to translate Jimple code from file **code/jimple_listing1.jimple** to a file **pyg_export/jimple_listing1.pyg**
-```
+```Shell
  python3 -m pygments -x -P filetype=jimple \
  	-P lspcommand="java -jar /path/to/content_root/of/LspLexer4Pygments/examples/jimplelsp-0.0.11.jar" \
 	-l lspserver -o pyg_export/jimple_listing1.pyg code/jimple_listing1.jimple
 ```
 
 Example LaTeX document (subdirectory for the translated results are in **pyg_export/**)
-```
+```latex
 
 \documentclass{article}
 \usepackage[utf8x]{inputenc}
@@ -54,14 +53,14 @@ Example LaTeX document (subdirectory for the translated results are in **pyg_exp
 
 ### Web based documentation (via MkDocs)
 get your LSP server binary. e.g. download the latest *jimplelsp.jar* release on github to support highlighting for [Soot](https://github.com/soot-oss/soot)s Jimple
-```
+```Shell
 curl -s -L -o ./jimplelsp.jar \
 	$(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | \
 		grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
 ```
 
 set config for Pygments in your mkdocs.yml (adapt "name: jimple" **(1)**, "filetype: jimple" and the lspcommand accordingly; "lang:" must be lspserver or lsplexer)
-```
+```Dockerfile
 markdown_extensions:
   - pymdownx.highlight:
       linenums: true            # not necessary but nice
@@ -86,28 +85,28 @@ specify your specified language name from **(1)** directly after the ticks of th
 
 ### Command line interface / cli
 generic (replace the placeholders) use installed LspLexer4Pygments
-```
+```Shell
 python3 -m pygments -x \
 	-P filetype=%FILETYPE% -P lspcommand="%LSPSERVERBINARY%" \
 	-l lspserver %INPUTFILE%
 ```
 
 generic (replace the placeholders) executed from content-root
-```
+```Shell
 python3 -m pygments -x \
 	-P filetype=%FILETYPE%-P lspcommand=%LSPSERVERBINARY% \
 	-l lsplexer/lexer.py:LspLexer %INPUTFILE%
 ```
 
 cli save to export.html executed from content-root
-```
+```Shell
 python3 -m pygments -x -f html -O full \
 	-P filetype=%FILETYPE% -P lspcommand=%LSPSERVERBINARY% \
 	-l lsplexer/lexer.py:LspLexer -o export.html %INPUTFILE%
 ```
 
 use the provided example as input (executing the given **.jar** via java) executed from content-root
-```
+```Shell
 python3 -m pygments -x \
 	-P filetype=jimple \
 	-P lspcommand="java -jar examples/jimplelsp-0.0.11.jar" \
