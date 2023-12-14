@@ -12,7 +12,7 @@ setup (
   python_requires='>=3.2',
   install_requires=[
     'Pygments>=2.9.0',
-    'pylspclient>=0.0.2'
+    'pylspclient=0.0.2'
   ],
 
   packages=find_packages(),
